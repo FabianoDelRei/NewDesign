@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salão de Luxo - NewDesign</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen p-8">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-gray-700 pb-4">
+      <h1 class="text-3xl font-bold text-pink-500">NewDesign - Gestão de Salão</h1>
+      <p class="text-gray-400">Acompanhamento de fila e atendimentos em tempo real</p>
+    </header>
+
+    <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section class="bg-gray-800 p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4 text-pink-400">Fila de Atendimento</h2>
+        <div id="lista-fila" class="space-y-3">
+          <p class="text-gray-400">Carregando fila...</p>
+        </div>
+      </section>
+
+      <section class="bg-gray-800 p-6 rounded-lg shadow">
+        <h2 class="text-xl font-semibold mb-4 text-pink-400">Serviços Disponíveis</h2>
+        <ul id="lista-servicos" class="list-disc list-inside space-y-1 text-gray-300">
+          <li>Carregando serviços...</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    async function carregarDados() {
+      try {
+        const resFila = await fetch('/fila');
+        const fila = await resFila.json();
+        const divFila = document.getElementById('lista-fila');
+        divFila.innerHTML = fila.map(p => `
+          <div class="flex justify-between items-center p-3 bg-gray-700 rounded">
+            <div>
+              <p class="font-bold">${p.posicao}º - ${p.nome}</p>
+              <p class="text-xs text-gray-400">${p.funcao} (${p.salao})</p>
+            </div>
+            <span class="px-2 py-1 text-xs font-bold rounded ${p.status === 'LIVRE' ? 'bg-green-600' : 'bg-yellow-600'}">${p.status}</span>
+          </div>
+        `).join('');
+
+        const resServicos = await fetch('/servicos');
+        const servicos = await resServicos.json();
+        const ulServicos = document.getElementById('lista-servicos');
+        ulServicos.innerHTML = servicos.map(s => `<li>${s}</li>`).join('');
+      } catch (err) {
+        console.error("Erro ao carregar dados:", err);
+      }
+    }
+    carregarDados();
+  </script>
+</body>
+</html>
