@@ -1,31 +1,30 @@
 const express = require("express");
 const app = express();
 const port = 3000;
-// Endpoint para converter decimal para binário
+
+// Converte o parâmetro para inteiro ou retorna null se for inválido
+function parseDecimal(value) {
+  return /^-?\d+$/.test(value) ? parseInt(value, 10) : null;
+}
+
+// Decimal para binário
 app.get("/to-binary/:decimal", (req, res) => {
- // Converte o parâmetro para número inteiro
- const decimal = parseInt(req.params.decimal, 10);
- // Se não for número decimal retorna um erro com status 400
- if (isNaN(decimal)) {
-   return res.status(400).json({ error: "Invalid decimal number" });
- }
- const binary = decimal.toString(2); // Converte o número decimal para binário
- res.json({ decimal, binary }); // Retorna a resposta como JSON
+  const decimal = parseDecimal(req.params.decimal);
+  if (decimal === null) {
+    return res.status(400).json({ error: "Invalid decimal number" });
+  }
+  res.json({ decimal, binary: decimal.toString(2) });
 });
-app.listen(port, () => {
- console.log(`Servidor rodando na porta ${port}`);
-});
-// Novo endpoint para converter decimal para hexadecimal
+
+// Decimal para hexadecimal (maiúsculas)
 app.get("/to-hex/:decimal", (req, res) => {
-   const decimal = parseInt(req.params.decimal, 10);
-   if (isNaN(decimal)) {
-     return res.status(400).json({ error: "Invalid decimal number" });
-   }
-   // Converte para hexadecimal e deixa em maiúsculas
-   const hex = decimal.toString(16).toUpperCase();
-   res.json({ decimal, hex });
+  const decimal = parseDecimal(req.params.decimal);
+  if (decimal === null) {
+    return res.status(400).json({ error: "Invalid decimal number" });
+  }
+  res.json({ decimal, hex: decimal.toString(16).toUpperCase() });
 });
 
 app.listen(port, () => {
-   console.log(`Server running on http://localhost:${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });
